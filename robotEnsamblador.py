@@ -51,15 +51,20 @@ class RobotEnsamblador(threading.Thread):
             try:
                 orden = self.cola_ordenes.get(timeout=2)
                 tipo = "moto" if "moto" in orden else "auto"
-                ensamblado = False
-                while not ensamblado and self.activo:
+
+                esperando_partes = False  # bandera para controlar mensaje único
+
+                while self.activo:
                     if self.verificar_partes(tipo):
                         self.usar_partes(tipo)
                         self.ensamblar(tipo)
-                        ensamblado = True
+                        break
                     else:
-                        print(f"{Colores.VERDE}{self.nombre} esperando partes para {tipo}...{Colores.RESET}")
+                        if not esperando_partes:
+                            print(f"{Colores.VERDE}{self.nombre} esperando partes para {tipo}...{Colores.RESET}")
+                            esperando_partes = True
                         time.sleep(2)
+
             except Exception:
                 time.sleep(1)
 
