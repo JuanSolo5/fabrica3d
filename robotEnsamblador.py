@@ -2,6 +2,7 @@ import threading
 import time
 from colores import Colores
 
+#Constructor
 class RobotEnsamblador(threading.Thread):
     def __init__(self, nombre, lock, cola_ordenes, inventario):
         super().__init__()
@@ -12,6 +13,7 @@ class RobotEnsamblador(threading.Thread):
         self.activo = True
         self.vehiculos_terminados = []
 
+    # Verifica si hay partes suficientes
     def verificar_partes(self, tipo):
         with self.lock:
             if tipo == "moto":
@@ -26,6 +28,7 @@ class RobotEnsamblador(threading.Thread):
                         self.inventario["rueda_auto"] >= 4)
         return False
 
+    # Usa las partes si estan disponibles y las resta del inventario
     def usar_partes(self, tipo):
         with self.lock:
             if tipo == "moto":
@@ -39,6 +42,7 @@ class RobotEnsamblador(threading.Thread):
                 self.inventario["tanque_auto"] -= 1
                 self.inventario["rueda_auto"] -= 4
 
+    #simula ensamblar un vehiculo y lo agrega a la lista de vehiculos ensamblados
     def ensamblar(self, tipo):
         color = Colores.CIAN if tipo == "moto" else Colores.MAGENTA
         print(f"{Colores.VERDE}{self.nombre} ensamblando {color}{tipo}{Colores.RESET}...")
@@ -46,20 +50,23 @@ class RobotEnsamblador(threading.Thread):
         print(f"{Colores.VERDE}{self.nombre} termino de ensamblar un {color}{tipo}{Colores.RESET}.")
         self.vehiculos_terminados.append(tipo)
 
+    #Bucle principal
     def run(self):
         while self.activo:
             try:
                 orden = self.cola_ordenes.get(timeout=2)
                 tipo = "moto" if "moto" in orden else "auto"
 
-                esperando_partes = False  # bandera para controlar mensaje único
+                esperando_partes = False
 
                 while self.activo:
+                    #Determina si hay inventario para ensamblar
                     if self.verificar_partes(tipo):
                         self.usar_partes(tipo)
                         self.ensamblar(tipo)
                         break
                     else:
+                        #Si no hay partes disponibles espera dos segundos
                         if not esperando_partes:
                             print(f"{Colores.VERDE}{self.nombre} esperando partes para {tipo}...{Colores.RESET}")
                             esperando_partes = True
@@ -67,7 +74,7 @@ class RobotEnsamblador(threading.Thread):
 
             except Exception:
                 time.sleep(1)
-
+    #Apaga el robot
     def apagar(self):
         self.activo = False
         print(f"{Colores.VERDE}{self.nombre} apagado.{Colores.RESET}")

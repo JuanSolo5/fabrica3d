@@ -29,7 +29,7 @@ TIEMPOS_PIEZAS = {
     "rueda_auto": 3
 }
 
-# --- Cola global de impresión ---
+# Cola de impresion.
 cola_impresion = Queue()
 
 def mostrar_inventario():
@@ -38,6 +38,7 @@ def mostrar_inventario():
         print(f"{k}: {v}")
     print("=========================\n")
 
+# Agrega las partes a la cola segun si es auto o moto.
 def agregar_piezas_a_cola(tipo):
     if tipo == "moto":
         piezas = ["chasis_moto", "motor_moto", "tanque_moto", "rueda_moto", "rueda_moto"]
@@ -52,6 +53,8 @@ def agregar_piezas_a_cola(tipo):
         cola_impresion.put(p)
     print(f"Piezas para {tipo} agregadas correctamente.\n")
 
+
+# proceso principal
 def main():
     lock = threading.Lock()
     cola_ordenes = Queue()
@@ -61,16 +64,19 @@ def main():
     for imp in impresoras:
         imp.start()
 
-    # Crear robots
+    # Crear robot de inventario
     robot_inv = RobotInventario("RobotInventario-1", lock, impresoras, INVENTARIO_PARTES)
     robot_inv.start()
 
+    # Crear robot ensamblador
     ensamblador = RobotEnsamblador("RobotEnsamblador-1", lock, cola_ordenes, INVENTARIO_PARTES)
     ensamblador.start()
 
     try:
         while True:
             mostrar_inventario()
+
+            # permite escribir para crear una moto, auto, o terminar el programa
             orden = input("Ingrese orden (moto/auto/salir): ").strip().lower()
             if orden == "salir":
                 break
@@ -81,6 +87,7 @@ def main():
                 print("Opcion no valida.")
             time.sleep(1)
 
+    #Interrupcion del programa
     except KeyboardInterrupt:
         pass
     finally:

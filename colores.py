@@ -1,5 +1,3 @@
-# colores.py
-
 class Colores:
     RESET = "\033[0m"
     AZUL = "\033[94m"
