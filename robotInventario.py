@@ -8,11 +8,12 @@ class RobotInventario(threading.Thread):
         super().__init__()
         self.nombre = nombre
         self.pieza_manos = None
-        self.lock = lock
+        self.lock = lock #Semaforo mutex
         self.velocidad = 2
         self.activo = True
         self.lista_impresoras = lista_impresoras
         self.inventario = inventario
+
     #Colorea las piezas
     def color_pieza(self, pieza):
         if "moto" in pieza:
@@ -27,9 +28,16 @@ class RobotInventario(threading.Thread):
             pieza_col = self.color_pieza(self.pieza_manos)
             print(f"{Colores.AMARILLO}{self.nombre} almacenando {pieza_col}...{Colores.RESET}")
             time.sleep(self.velocidad)
-            with self.lock:
+
+            #SECCION CRITICA
+            self.lock.acquire()
+            try:
                 if self.pieza_manos in self.inventario:
                     self.inventario[self.pieza_manos] += 1
+            finally:
+                self.lock.release()
+            # --------------
+
             print(f"{Colores.AMARILLO}{self.nombre} guardo {pieza_col} en el almacen.{Colores.RESET}")
             self.pieza_manos = None
 
@@ -39,10 +47,16 @@ class RobotInventario(threading.Thread):
         for impresora in self.lista_impresoras:
             time.sleep(self.velocidad)
             pieza = None
-            # Extraer pieza de la cama bajo lock
-            with self.lock:
+
+            #SECCION CRITICA
+            self.lock.acquire()
+            try:
                 if impresora.cama:
                     pieza = impresora.cama.pop(0)
+            finally:
+                self.lock.release()
+            # --------------
+
             if pieza:
                 pieza_col = self.color_pieza(pieza)
                 print(f"{Colores.AMARILLO}{self.nombre} recogio {pieza_col} de {impresora.nombre}.{Colores.RESET}")
@@ -50,6 +64,7 @@ class RobotInventario(threading.Thread):
                 # Guardar inmediatamente
                 self.guardar_pieza()
                 return True
+
         return False
 
     #bucle principal

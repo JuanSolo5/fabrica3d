@@ -15,22 +15,36 @@ class RobotEnsamblador(threading.Thread):
 
     # Verifica si hay partes suficientes
     def verificar_partes(self, tipo):
-        with self.lock:
-            if tipo == "moto":
-                return (self.inventario["chasis_moto"] >= 1 and
-                        self.inventario["motor_moto"] >= 1 and
-                        self.inventario["tanque_moto"] >= 1 and
-                        self.inventario["rueda_moto"] >= 2)
-            elif tipo == "auto":
-                return (self.inventario["chasis_auto"] >= 1 and
-                        self.inventario["motor_auto"] >= 1 and
-                        self.inventario["tanque_auto"] >= 1 and
-                        self.inventario["rueda_auto"] >= 4)
-        return False
+        resultado = False
 
-    # Usa las partes si estan disponibles y las resta del inventario
+        #SECCION CRITICA
+        self.lock.acquire()
+        try:
+            if tipo == "moto":
+                resultado = (
+                    self.inventario["chasis_moto"] >= 1 and
+                    self.inventario["motor_moto"] >= 1 and
+                    self.inventario["tanque_moto"] >= 1 and
+                    self.inventario["rueda_moto"] >= 2
+                )
+            elif tipo == "auto":
+                resultado = (
+                    self.inventario["chasis_auto"] >= 1 and
+                    self.inventario["motor_auto"] >= 1 and
+                    self.inventario["tanque_auto"] >= 1 and
+                    self.inventario["rueda_auto"] >= 4
+                )
+        finally:
+            self.lock.release()
+        # ------------------------
+
+        return resultado
+
+    # Usa las partes si están disponibles y las resta del inventario
     def usar_partes(self, tipo):
-        with self.lock:
+        #SECCION CRITICA
+        self.lock.acquire()
+        try:
             if tipo == "moto":
                 self.inventario["chasis_moto"] -= 1
                 self.inventario["motor_moto"] -= 1
@@ -41,16 +55,19 @@ class RobotEnsamblador(threading.Thread):
                 self.inventario["motor_auto"] -= 1
                 self.inventario["tanque_auto"] -= 1
                 self.inventario["rueda_auto"] -= 4
+        finally:
+            self.lock.release()
+        # ------------------------
 
-    #simula ensamblar un vehiculo y lo agrega a la lista de vehiculos ensamblados
+    # simula ensamblar un vehiculo y lo agrega a la lista terminados
     def ensamblar(self, tipo):
         color = Colores.CIAN if tipo == "moto" else Colores.MAGENTA
         print(f"{Colores.VERDE}{self.nombre} ensamblando {color}{tipo}{Colores.RESET}...")
         time.sleep(3)
-        print(f"{Colores.VERDE}{self.nombre} termino de ensamblar un {color}{tipo}{Colores.RESET}.")
+        print(f"{Colores.VERDE}{self.nombre} terminó de ensamblar un {color}{tipo}{Colores.RESET}.")
         self.vehiculos_terminados.append(tipo)
 
-    #Bucle principal
+    # Bucle principal
     def run(self):
         while self.activo:
             try:
@@ -60,13 +77,13 @@ class RobotEnsamblador(threading.Thread):
                 esperando_partes = False
 
                 while self.activo:
-                    #Determina si hay inventario para ensamblar
+                    # Determina si hay inventario para ensamblar
                     if self.verificar_partes(tipo):
                         self.usar_partes(tipo)
                         self.ensamblar(tipo)
                         break
                     else:
-                        #Si no hay partes disponibles espera dos segundos
+                        # Si no hay partes disponibles espera dos segundos
                         if not esperando_partes:
                             print(f"{Colores.VERDE}{self.nombre} esperando partes para {tipo}...{Colores.RESET}")
                             esperando_partes = True
@@ -74,7 +91,8 @@ class RobotEnsamblador(threading.Thread):
 
             except Exception:
                 time.sleep(1)
-    #Apaga el robot
+
+    # Apaga el robot
     def apagar(self):
         self.activo = False
         print(f"{Colores.VERDE}{self.nombre} apagado.{Colores.RESET}")

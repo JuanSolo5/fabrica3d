@@ -8,7 +8,7 @@ class Impresora3D(threading.Thread):
     def __init__(self, nombre, lock, tiempos_piezas, cola_impresion):
         super().__init__()
         self.nombre = nombre
-        self.lock = lock
+        self.lock = lock #Semaforo mutex
         self.tiempos_piezas = tiempos_piezas
         self.cola_impresion = cola_impresion
         self.cama = []
@@ -35,8 +35,14 @@ class Impresora3D(threading.Thread):
         print(f"{Colores.AZUL}{self.nombre} imprimiendo {pieza_col}... ({tiempo_impresion}s){Colores.RESET}")
         time.sleep(tiempo_impresion)
         print(f"{Colores.AZUL}{self.nombre} termino de imprimir {pieza_col}.{Colores.RESET}")
-        with self.lock:
+
+        #SECCION CRITICA
+        self.lock.acquire()
+        try:
             self.cama.append(pieza)
+        finally:
+            self.lock.release()
+        #-----------------
 
     #Espera a que llegue una pieza en la impresora para imprimir
     def run(self):
