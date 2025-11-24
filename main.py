@@ -104,6 +104,7 @@ def main():
         while True:
             mostrar_inventario()
 
+            #Recibe el input para agregar un vehiculo a la cola
             orden = input("Ingrese orden (moto/auto/salir): ").strip().lower()
             if orden == "salir":
                 break
@@ -134,6 +135,7 @@ def main():
         for e in robots_ens:
             e.join()
 
+        #imprime una lista con los vehiculos terminados
         print("\nFábrica cerrada correctamente.")
         terminados = []
         for e in robots_ens:
