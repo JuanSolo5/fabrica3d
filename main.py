@@ -17,7 +17,7 @@ INVENTARIO_PARTES = {
     "rueda_auto": 0
 }
 
-# --- Tiempos de impresión por tipo de pieza ---
+# --- Tiempos de impresion por tipo de pieza ---
 TIEMPOS_PIEZAS = {
     "chasis_moto": 5,
     "motor_moto": 7,
@@ -41,10 +41,21 @@ def mostrar_inventario():
 # Agrega las piezas a la cola segun tipo
 def agregar_piezas_a_cola(tipo):
     if tipo == "moto":
-        piezas = ["chasis_moto", "motor_moto", "tanque_moto", "rueda_moto", "rueda_moto"]
+        piezas = [
+            "chasis_moto", 
+            "motor_moto", 
+            "tanque_moto", 
+            "rueda_moto", 
+            "rueda_moto"]
     elif tipo == "auto":
-        piezas = ["chasis_auto", "motor_auto", "tanque_auto",
-                  "rueda_auto", "rueda_auto", "rueda_auto", "rueda_auto"]
+        piezas = [
+            "chasis_auto", 
+            "motor_auto", 
+            "tanque_auto",
+            "rueda_auto", 
+            "rueda_auto", 
+            "rueda_auto", 
+            "rueda_auto"]
     else:
         return
 

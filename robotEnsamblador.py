@@ -40,7 +40,7 @@ class RobotEnsamblador(threading.Thread):
 
         return resultado
 
-    # Usa las partes si están disponibles y las resta del inventario
+    # Usa las partes si estan disponibles y las resta del inventario
     def usar_partes(self, tipo):
         #SECCION CRITICA
         self.lock.acquire()

@@ -64,7 +64,6 @@ class RobotInventario(threading.Thread):
                 # Guardar inmediatamente
                 self.guardar_pieza()
                 return True
-
         return False
 
     #bucle principal
