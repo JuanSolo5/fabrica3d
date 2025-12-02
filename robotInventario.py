@@ -35,7 +35,7 @@ class RobotInventario(threading.Thread):
                 if self.pieza_manos in self.inventario:
                     self.inventario[self.pieza_manos] += 1
             finally:
-                self.lock.release()
+                self.lock.release() #Evita que se quede en condicion de deadlock
             # --------------
 
             print(f"{Colores.AMARILLO}{self.nombre} guardo {pieza_col} en el almacen.{Colores.RESET}")
@@ -54,7 +54,7 @@ class RobotInventario(threading.Thread):
                 if impresora.cama:
                     pieza = impresora.cama.pop(0)
             finally:
-                self.lock.release()
+                self.lock.release() #Evita que se quede en condicion de deadlock
             # --------------
 
             if pieza:

@@ -41,7 +41,7 @@ class Impresora3D(threading.Thread):
         try:
             self.cama.append(pieza)
         finally:
-            self.lock.release()
+            self.lock.release() #Evita que se quede en condicion de deadlock
         #-----------------
 
     #Espera a que llegue una pieza en la impresora para imprimir

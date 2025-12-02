@@ -87,6 +87,8 @@ def main():
 
     print("\nInicializando fábrica...\n")
 
+
+    #Instanciamiento de dispositivos
     # Crear impresoras
     impresoras = [
         Impresora3D(f"Impresora-{i+1}", lock, TIEMPOS_PIEZAS, cola_impresion)

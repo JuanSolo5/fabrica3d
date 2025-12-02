@@ -35,7 +35,7 @@ class RobotEnsamblador(threading.Thread):
                     self.inventario["rueda_auto"] >= 4
                 )
         finally:
-            self.lock.release()
+            self.lock.release() #Evita que se quede en condicion de deadlock
         # ------------------------
 
         return resultado
@@ -56,7 +56,7 @@ class RobotEnsamblador(threading.Thread):
                 self.inventario["tanque_auto"] -= 1
                 self.inventario["rueda_auto"] -= 4
         finally:
-            self.lock.release()
+            self.lock.release() #Evita que se quede en condicion de deadlock
         # ------------------------
 
     # simula ensamblar un vehiculo y lo agrega a la lista terminados
